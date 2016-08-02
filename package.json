@@ -1,0 +1,29 @@
+{
+  "name": "workflowyfx",
+  "version": "0.1.0",
+  "description": "Makes WorkFlowy even smarter.",
+  "main": "workflowyfx.js",
+  "author": "Nicolai (nipa@codefx.org)",
+  "license": "GPL-3.0",
+  "config": {
+    "name": "WorkFlowyFX",
+    "version": "0.1.0",
+    "description": "Makes WorkFlowy even smarter.",
+    "main": "workflowyfx.js"
+  },
+  "dependencies": {
+    "jquery": "^3.1.0"
+  },
+  "devDependencies": {
+    "copyfiles": "^1.0.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "merge": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^2.3.0",
+    "rimraf": "^2.5.4"
+  },
+  "scripts": {
+    "build": "node build.js"
+  }
+}
