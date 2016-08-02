@@ -1,0 +1,21 @@
+{
+	"shared": {
+		"manifest_version": 2,
+		"name": "$config_name",
+		"version": "$config_version",
+		"description": "$config_description",
+		"content_scripts": [
+			{
+				"matches": ["*://workflowy.com/*"],
+				"js": ["$config_main"],
+				"run_at": "document_idle"
+			}
+		]
+	},
+
+	"chrome": { },
+
+	"firefox": {
+		"icons": { "48": "icons/icon.png" }
+	}
+}
