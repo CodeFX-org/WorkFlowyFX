@@ -17,6 +17,9 @@ const p_ff = `${p_plugins}/firefox`
 
 // execute specified build target(s)
 
+// extract the command line arguments specifying what to build
+// (first two arguments are the Node executable and the script file
+//  https://nodejs.org/docs/latest/api/process.html#process_process_argv )
 if (process.argv.length == 2)
 	all()
 else
@@ -101,6 +104,7 @@ function buildFirefox() {
 // helpers
 
 function copyFlat() {
+	// copyfiles requires an array so create one from the arguments
 	copyfiles(Array.prototype.slice.call(arguments), true, abortBuildIfError)
 }
 
@@ -118,14 +122,18 @@ function createManifestStringFor(browser) {
 
 function createBrowserSpecificManifest(browser) {
 	var source = require(`${p_src}/manifest`)
+	// extract the shared part of the manifest and merge it with the browser-specific part
 	return merge(source["shared"], source[browser]);
 }
 
 function replaceConfigVariables(merged) {
 	return JSON.stringify(merged, null, '\t').replace(
-		// variables have the form "$config_foo", where package.json defines the config parameter "foo"
+		// variables in the manifest have the form "$config_foo",
+		// where package.json defines the config parameter "foo"
 		new RegExp(/\$config_(\w+)/, "g"),
-		(match, parameterName) => process.env[`npm_package_config_${parameterName}`])
+		// replace the match with the package.json entry
+		(match, parameterName) => process.env[`npm_package_config_${parameterName}`]
+	)
 }
 
 function bundleSource(entries, target) {
