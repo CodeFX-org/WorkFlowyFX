@@ -4,6 +4,7 @@ const mkdirp = require('mkdirp')
 const copyfiles = require('copyfiles')
 const merge = require('merge')
 const fs = require('fs')
+const browserify = require('browserify')
 
 // placeholders
 const ch = 'chrome'
@@ -75,8 +76,8 @@ function buildChrome() {
 	console.log('creating manifest')
 	fs.writeFile(`${p_ch}/manifest.json`, createManifestStringFor(chrome), abortBuildIfError)
 
-	console.log('copying source')
-	copyFlat(`${p_src}/workflowyfx.js`, `${p_ch}`)
+	console.log(`bundling sources and dependencies into ${process.env.npm_package_main}`)
+	bundleSource(`${p_src}/${process.env.npm_package_main}`, `${p_ch}/${process.env.npm_package_main}`)
 
 	console.log()
 }
@@ -91,8 +92,8 @@ function buildFirefox() {
 	console.log('creating manifest')
 	fs.writeFile(`${p_ff}/manifest.json`, createManifestStringFor(firefox), abortBuildIfError)
 
-	console.log('copying source')
-	copyFlat(`${p_src}/workflowyfx.js`, `${p_ff}`)
+	console.log(`bundling sources and dependencies into ${process.env.npm_package_main}`)
+	bundleSource(`${p_src}/${process.env.npm_package_main}`, `${p_ff}/${process.env.npm_package_main}`)
 
 	console.log()
 }
@@ -125,4 +126,8 @@ function replaceConfigVariables(merged) {
 		// variables have the form "$config_foo", where package.json defines the config parameter "foo"
 		new RegExp(/\$config_(\w+)/, "g"),
 		(match, parameterName) => process.env[`npm_package_config_${parameterName}`])
+}
+
+function bundleSource(entries, target) {
+	browserify(entries).bundle().pipe(fs.createWriteStream(target))
 }
