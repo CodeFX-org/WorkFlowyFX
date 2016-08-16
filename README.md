@@ -8,6 +8,8 @@ It adds a couple of small usability features to the already awesome _WorkFlowy_.
 ## Features
 
 * prints `Hello, WorkFlowy` to the console
+* shows (or hides) all notes with `Meta + Shift + N`
+* makes the list of shortcuts a little wider to avoid line breaks
 
 ## Build
 
