@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Makes WorkFlowy even smarter.",
   "main": "workflowyfx.js",
+  "repository": "https://github.com/CodeFX-org/WorkFlowyFX",
   "author": "Nicolai (nipa@codefx.org)",
   "license": "GPL-3.0",
   "config": {

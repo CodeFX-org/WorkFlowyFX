@@ -3,7 +3,7 @@ const rimraf = require('rimraf')
 const mkdirp = require('mkdirp')
 const copyfiles = require('copyfiles')
 const merge = require('merge')
-const fs = require('fs');
+const fs = require('fs')
 
 // placeholders
 const ch = 'chrome'
@@ -25,8 +25,8 @@ else
 
 function build(target) {
 	var targetAsFunction = {
-		"c": clean,
-		"clean": clean,
+		"clean" : clean,
+		"c" : clean,
 		"chrome" : chrome,
 		"ch" : chrome,
 		"firefox" : firefox,
