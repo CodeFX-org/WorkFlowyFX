@@ -31,6 +31,19 @@ $(document.body).keypress(event => {
 // add it to shortcut list
 afterCommand('Add a note').add('Show/hide all notes', 'Meta + Shift + N')
 
+//+++++++++++++++++++++//
+// STYLE SHORTCUT LIST //
+//+++++++++++++++++++++//
+
+$('<style>')
+	.text(`
+		#keyboardShortcutHelper {
+			width: 375px;
+		}
+		#keyboardShortcutHelper td.commandName {
+			max-width: 150px;
+		}`)
+	.appendTo(document.head);
 
 
 //+++++++++//
