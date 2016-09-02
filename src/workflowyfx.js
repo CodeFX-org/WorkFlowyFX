@@ -25,8 +25,10 @@ $('<style>')
 // toggle on key press
 $(document.body).keypress(event => {
 	// META + SHIFT + N
-	if (event.metaKey && event.shiftKey && event.keyCode == 78)
+	if (event.metaKey && event.shiftKey && event.keyCode == 78) {
 		document.body.classList.toggle('show-all-notes')
+		event.preventDefault()
+	}
 })
 // add it to shortcut list
 afterCommand('Add a note').add('Show/hide all notes', 'Meta + Shift + N')
