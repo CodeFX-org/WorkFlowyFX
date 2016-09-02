@@ -108,7 +108,7 @@ function createManifestStringFor(browser) {
 function createBrowserSpecificManifest(browser) {
 	var source = require(`${p_src}/manifest.json`)
 	// extract the shared part of the manifest and merge it with the browser-specific part
-	return merge(source["shared"], source[browser.name]);
+	return merge(true, source["shared"], source[browser.name]);
 }
 
 function replaceConfigVariables(merged) {
