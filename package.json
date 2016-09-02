@@ -10,7 +10,8 @@
     "name": "WorkFlowyFX",
     "version": "0.1.0",
     "description": "Makes WorkFlowy even smarter.",
-    "main": "workflowyfx.js"
+    "main": "workflowyfx.js",
+    "resources": "resources"
   },
   "dependencies": {
     "jquery": "^3.1.0"

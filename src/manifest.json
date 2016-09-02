@@ -4,6 +4,9 @@
 		"name": "$config_name",
 		"version": "$config_version",
 		"description": "$config_description",
+		"icons" : {
+			"512" : "$config_resources/icon.png"
+		},
 		"content_scripts": [
 			{
 				"matches": ["*://workflowy.com/*"],
@@ -13,9 +16,11 @@
 		]
 	},
 
-	"chrome": { },
+	"chrome": {
+		"browser_action": {
+			"default_icon": "$config_resources/icon.png"
+		}
+	},
 
-	"firefox": {
-		"icons": { "48": "icons/icon.png" }
-	}
+	"firefox": { }
 }

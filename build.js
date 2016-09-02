@@ -6,14 +6,22 @@ const merge = require('merge')
 const fs = require('fs')
 const browserify = require('browserify')
 
-// placeholders
-const ch = 'chrome'
-const ff = 'firefox'
+// paths and more
 const p_src = './src'
 const p_resrc = `${p_src}/resources`
 const p_plugins = './plugins'
-const p_ch = `${p_plugins}/chrome`
-const p_ff = `${p_plugins}/firefox`
+const browsers = {
+	chrome : {
+		name: "chrome",
+		targetPath: `${p_plugins}/chrome`,
+		targetResourcesPath: `${p_plugins}/chrome/${process.env.npm_package_config_resources}`
+	},
+	firefox : {
+		name: "firefox",
+		targetPath: `${p_plugins}/firefox`,
+		targetResourcesPath: `${p_plugins}/firefox/${process.env.npm_package_config_resources}`
+	}
+}
 
 // execute specified build target(s)
 
@@ -25,9 +33,9 @@ if (process.argv.length == 2)
 else
 	process.argv
 		.slice(2)
-		.forEach(target => build(target))
+		.forEach(target => buildTarget(target))
 
-function build(target) {
+function buildTarget(target) {
 	var targetAsFunction = {
 		"clean" : clean,
 		"c" : clean,
@@ -48,18 +56,18 @@ function build(target) {
 
 function all() {
 	clean()
-	buildChrome()
-	buildFirefox()
+	buildBrowser(browsers.chrome)
+	buildBrowser(browsers.firefox)
 }
 
 function chrome() {
 	clean()
-	buildChrome()
+	buildBrowser(browsers.chrome)
 }
 
 function firefox() {
 	clean()
-	buildFirefox()
+	buildBrowser(browsers.firefox)
 }
 
 // - atoms
@@ -70,38 +78,64 @@ function clean() {
 	console.log()
 }
 
-function buildChrome() {
-	console.log('building Chrome plugin')
+function buildBrowser(browser) {
+	console.log(`building ${browser.name} plugin`)
 
-	console.log('creating folders')
-	mkdirp.sync(p_ch, abortBuildIfError)
-
-	console.log('creating manifest')
-	fs.writeFile(`${p_ch}/manifest.json`, createManifestStringFor(chrome), abortBuildIfError)
-
-	console.log(`bundling sources and dependencies into ${process.env.npm_package_main}`)
-	bundleSource(`${p_src}/${process.env.npm_package_main}`, `${p_ch}/${process.env.npm_package_main}`)
-
-	console.log()
-}
-
-function buildFirefox() {
-	console.log('building Firefox plugin')
-
-	console.log('creating folders')
-	mkdirp.sync(`${p_ff}/icons`, abortBuildIfError)
-	copyFlat(`${p_resrc}/icon.png`, `${p_ff}/icons`)
-
-	console.log('creating manifest')
-	fs.writeFile(`${p_ff}/manifest.json`, createManifestStringFor(firefox), abortBuildIfError)
-
-	console.log(`bundling sources and dependencies into ${process.env.npm_package_main}`)
-	bundleSource(`${p_src}/${process.env.npm_package_main}`, `${p_ff}/${process.env.npm_package_main}`)
+	createFolders(browser);
+	createManifest(browser);
+	bundleSources(browser);
+	copyResources(browser)
 
 	console.log()
 }
 
 // helpers
+
+function createFolders(browser) {
+	console.log(`creating target folder "${browser.targetPath}"`)
+	mkdirp.sync(browser.targetPath, abortBuildIfError)
+	mkdirp.sync(browser.targetResourcesPath, abortBuildIfError)
+}
+
+function createManifest(browser) {
+	console.log('creating manifest')
+	fs.writeFile(`${browser.targetPath}/manifest.json`, createManifestStringFor(browser), abortBuildIfError)
+}
+
+function createManifestStringFor(browser) {
+	return replaceConfigVariables(createBrowserSpecificManifest(browser));
+}
+function createBrowserSpecificManifest(browser) {
+	var source = require(`${p_src}/manifest.json`)
+	// extract the shared part of the manifest and merge it with the browser-specific part
+	return merge(source["shared"], source[browser.name]);
+}
+
+function replaceConfigVariables(merged) {
+	return JSON.stringify(merged, null, '\t').replace(
+		// variables in the manifest have the form "$config_foo",
+		// where package.json defines the config parameter "foo"
+		new RegExp(/\$config_(\w+)/, "g"),
+		// replace the match with the package.json entry
+		(match, parameterName) => process.env[`npm_package_config_${parameterName}`]
+	)
+}
+
+function bundleSources(browser) {
+	console.log(`bundling sources and dependencies into "${process.env.npm_package_main}"`)
+	bundleSourceFromTo(`${p_src}/${process.env.npm_package_main}`, `${browser.targetPath}/${process.env.npm_package_main}`)
+}
+
+function bundleSourceFromTo(entries, target) {
+	browserify(entries).bundle().pipe(fs.createWriteStream(target))
+}
+
+function copyResources(browser) {
+	console.log(`copying resources into "${browser.targetResourcesPath}"`)
+	copyFlat(`${p_resrc}/icon.png`, browser.targetResourcesPath)
+}
+
+// low level
 
 function copyFlat() {
 	// copyfiles requires an array so create one from the arguments
@@ -116,26 +150,3 @@ function abortBuildIfError(error) {
 	}
 }
 
-function createManifestStringFor(browser) {
-	return replaceConfigVariables(createBrowserSpecificManifest(browser));
-}
-
-function createBrowserSpecificManifest(browser) {
-	var source = require(`${p_src}/manifest`)
-	// extract the shared part of the manifest and merge it with the browser-specific part
-	return merge(source["shared"], source[browser]);
-}
-
-function replaceConfigVariables(merged) {
-	return JSON.stringify(merged, null, '\t').replace(
-		// variables in the manifest have the form "$config_foo",
-		// where package.json defines the config parameter "foo"
-		new RegExp(/\$config_(\w+)/, "g"),
-		// replace the match with the package.json entry
-		(match, parameterName) => process.env[`npm_package_config_${parameterName}`]
-	)
-}
-
-function bundleSource(entries, target) {
-	browserify(entries).bundle().pipe(fs.createWriteStream(target))
-}
