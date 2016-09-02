@@ -24,12 +24,18 @@ $('<style>')
 	.appendTo(document.head);
 // toggle on key press
 $(document.body).keypress(event => {
-	// META + SHIFT + N
-	if (event.metaKey && event.shiftKey && event.keyCode == 78) {
+	// META + SHIFT + N ~> show all notes
+	if (isMetaPressed(event) && event.shiftKey && event.key == 'N') {
 		document.body.classList.toggle('show-all-notes')
 		event.preventDefault()
 	}
 })
+function isMetaPressed(event) {
+	// Firefox does not seem to register the meta key
+	// (see http://stackoverflow.com/questions/39292111/can-firefox-detect-metakey),
+	// so we allow both Meta (for Chrome) and Alt (for Firefox)
+	return (event.metaKey || event.altKey);
+}
 // add it to shortcut list
 afterCommand('Add a note').add('Show/hide all notes', 'Meta + Shift + N')
 
