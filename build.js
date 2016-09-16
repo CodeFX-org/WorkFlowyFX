@@ -1,15 +1,15 @@
 // library functions
-const rimraf = require('rimraf')
-const mkdirp = require('mkdirp')
-const copyfiles = require('copyfiles')
-const merge = require('merge')
-const fs = require('fs')
-const browserify = require('browserify')
+const rimraf = require(`rimraf`)
+const mkdirp = require(`mkdirp`)
+const copyfiles = require(`copyfiles`)
+const merge = require(`merge`)
+const fs = require(`fs`)
+const browserify = require(`browserify`)
 
 // paths and more
-const p_src = './src'
+const p_src = `./src`
 const p_resrc = `${p_src}/resources`
-const p_plugins = './plugins'
+const p_plugins = `./plugins`
 const browsers = {
 	chrome : {
 		name: "chrome",
@@ -37,12 +37,12 @@ else
 
 function buildTarget(target) {
 	var targetAsFunction = {
-		"clean" : clean,
-		"c" : clean,
-		"chrome" : chrome,
-		"ch" : chrome,
-		"firefox" : firefox,
-		"ff" : firefox
+		clean : clean,
+		c : clean,
+		chrome : chrome,
+		ch : chrome,
+		firefox : firefox,
+		ff : firefox
 	}[target]
 	if (targetAsFunction)
 		targetAsFunction()
@@ -98,7 +98,7 @@ function createFolders(browser) {
 }
 
 function createManifest(browser) {
-	console.log('creating manifest')
+	console.log(`creating manifest`)
 	fs.writeFile(`${browser.targetPath}/manifest.json`, createManifestStringFor(browser), abortBuildIfError)
 }
 
@@ -112,7 +112,7 @@ function createBrowserSpecificManifest(browser) {
 }
 
 function replaceConfigVariables(merged) {
-	return JSON.stringify(merged, null, '\t').replace(
+	return JSON.stringify(merged, null, `\t`).replace(
 		// variables in the manifest have the form "$config_foo",
 		// where package.json defines the config parameter "foo"
 		new RegExp(/\$config_(\w+)/, "g"),
