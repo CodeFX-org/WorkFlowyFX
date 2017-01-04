@@ -3,5 +3,5 @@
 
 # Build
 node_modules/
-plugins/
+extensions/
 npm-debug.log

@@ -9,17 +9,17 @@ const browserify = require(`browserify`)
 // paths and more
 const p_src = `./src`
 const p_resrc = `${p_src}/resources`
-const p_plugins = `./plugins`
+const p_extensions = `./extensions`
 const browsers = {
 	chrome : {
 		name: "chrome",
-		targetPath: `${p_plugins}/chrome`,
-		targetResourcesPath: `${p_plugins}/chrome/${process.env.npm_package_config_resources}`
+		targetPath: `${p_extensions}/chrome`,
+		targetResourcesPath: `${p_extensions}/chrome/${process.env.npm_package_config_resources}`
 	},
 	firefox : {
 		name: "firefox",
-		targetPath: `${p_plugins}/firefox`,
-		targetResourcesPath: `${p_plugins}/firefox/${process.env.npm_package_config_resources}`
+		targetPath: `${p_extensions}/firefox`,
+		targetResourcesPath: `${p_extensions}/firefox/${process.env.npm_package_config_resources}`
 	}
 }
 
@@ -73,13 +73,13 @@ function firefox() {
 // - atoms
 
 function clean() {
-	console.log(`deleting "${p_plugins}"`)
-	rimraf.sync(p_plugins, { }, abortBuildIfError)
+	console.log(`deleting "${p_extensions}"`)
+	rimraf.sync(p_extensions, { }, abortBuildIfError)
 	console.log()
 }
 
 function buildBrowser(browser) {
-	console.log(`building ${browser.name} plugin`)
+	console.log(`building ${browser.name} extension`)
 
 	createFolders(browser);
 	createManifest(browser);
