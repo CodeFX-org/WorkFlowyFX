@@ -24,22 +24,29 @@ $(`<style>`)
 			overflow: visible;
 		}`)
 	.appendTo(document.head);
+
 // toggle on key press
-$(document.body).keypress(event => {
-	// META + SHIFT + N ~> show all notes
-	if (isMetaPressed(event) && event.shiftKey && event.key == `N`) {
-		document.body.classList.toggle(`show-all-notes`)
-		event.preventDefault()
-	}
-})
-function isMetaPressed(event) {
-	// Firefox does not seem to register the meta key
-	// (see http://stackoverflow.com/questions/39292111/can-firefox-detect-metakey),
-	// so we allow both Meta (for Chrome) and Alt (for Firefox)
-	return (event.metaKey || event.altKey);
-}
+$(`<button accesskey="n">`)
+	.css(`position`, `fixed`)
+	.appendTo(document.body).focusin(event => {
+		// without focusing the event target the (invisible) button would be in focus
+		const selectedNode = event.relatedTarget;
+		selectedNode.focus()
+
+		$(document.body).toggleClass(`show-all-notes`);
+
+		// TODO: fix node position
+		// expanding all notes moves the content around;
+		// to keep the expanded node on screen it would make sense to
+		// store the event target's position and restore it later
+		// (also see http://stackoverflow.com/a/15154609)
+
+		// preventDefault && stopPropagation
+		return false
+	})
+
 // add it to shortcut list
-afterCommand(`Add a note`).add(`Show/hide all notes`, `Meta + Shift + N`)
+afterCommand(`Add a note`).addAccessKey(`Show/hide all notes`, `N`)
 
 //+++++++++++++++++++++//
 // STYLE SHORTCUT LIST //
@@ -65,6 +72,9 @@ function afterCommand(name) {
 	return {
 		add : function(name, description) {
 			afterRowAddNewCommand($commandRow, name, description)
+		},
+		addAccessKey : function(name, accessKey) {
+			afterRowAddNewCommand($commandRow, name, accessKeyText(accessKey))
 		}
 	}
 }
@@ -76,4 +86,14 @@ function afterRowAddNewCommand($row, name, description) {
 			<td class="commandDescription">${description}</td>
 		</tr>`
 	$row.after(newRow)
+}
+
+function accessKeyText(accessKey) {
+	return accessKeyModifier() + ` + ` + accessKey
+}
+
+function accessKeyModifier() {
+	// TODO: determine shortcut according to browser and OS
+	// TODO: memoize
+	return `<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey" target="_blank">ACC</a>`
 }
