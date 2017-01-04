@@ -48,7 +48,7 @@ afterCommand(`Add a note`).add(`Show/hide all notes`, `Meta + Shift + N`)
 $(`<style>`)
 	.text(`
 		#keyboardShortcutHelper {
-			width: 375px;
+			width: 400px;
 		}
 		#keyboardShortcutHelper td.commandName {
 			max-width: 150px;
