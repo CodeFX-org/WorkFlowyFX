@@ -45,6 +45,14 @@ $(`<button accesskey="n">`)
 		return false
 	})
 
+var modsHtml;
+var mods = accessKeyModifiers(navigator.userAgent)
+if (mods) {
+	modsHtml = `<kbd>${mods.join('</kbd> + <kbd>')}</kbd> + `
+} else {
+	modsHtml = `<a href="https://developer.mozilla.org/docs/Web/HTML/Global_attributes/accesskey" target="_blank"><em>ACC</em></a> + `
+}
+
 // add it to shortcut list
 afterCommand(`Add a note`).addAccessKey(`Show/hide all notes`, `N`)
 
@@ -88,12 +96,32 @@ function afterRowAddNewCommand($row, name, description) {
 	$row.after(newRow)
 }
 
-function accessKeyText(accessKey) {
-	return accessKeyModifier() + ` + ` + accessKey
+function accessKeyHtml(accessKey) {
+	return (modsHTML + accessKey)
 }
 
-function accessKeyModifier() {
-	// TODO: determine shortcut according to browser and OS
-	// TODO: memoize
-	return `<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/accesskey" target="_blank">ACC</a>`
+// see https://developer.mozilla.org/docs/Web/HTML/Global_attributes/accesskey
+function accessKeyModifiers(ua) {
+	var uaFlags = parseUserAgent(ua)
+
+	var isKnownPlatform = (uaFlags.lin || uaFlags.mac || uaFlags.win)
+	var isKnownApp = (uaFlags.chrome || uaFlags.firefox)
+	if (! isKnownPlatform || ! isKnownApp) return
+
+	if (uaFlags.mac)     return [ `Ctrl`, `Alt` ]
+	if (uaFlags.chrome)  return [ `Alt` ]
+	if (uaFlags.firefox) return [ `Alt`, `Shift` ]
+}
+
+function parseUserAgent(ua) {
+	var uaLower = ua.toLowerCase()
+
+	return {
+		lin: uaLower.indexOf(`lin`) != -1,
+		mac: uaLower.indexOf(`mac`) != -1,
+		win: uaLower.indexOf(`win`) != -1,
+
+		chrome:  uaLower.indexOf(`chrome`)  != -1,
+		firefox: uaLower.indexOf(`firefox`) != -1
+	}
 }
