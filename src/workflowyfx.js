@@ -82,7 +82,7 @@ function afterCommand(name) {
 			afterRowAddNewCommand($commandRow, name, description)
 		},
 		addAccessKey : function(name, accessKey) {
-			afterRowAddNewCommand($commandRow, name, accessKeyText(accessKey))
+			afterRowAddNewCommand($commandRow, name, accessKeyHtml(accessKey))
 		}
 	}
 }
